@@ -1,11 +1,13 @@
-import { useDispatch, } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import { decrement, increment } from "./redux/features/counter/counterSlice";
+import type { RootState } from "./redux/store";
 
 function App() {
 
   const dispatch = useDispatch();
-  // const counter = useSelector();
+  const {count} = useSelector((state:RootState) => state.counter)
+ 
 
 
 
@@ -25,7 +27,7 @@ function App() {
     <div>
       <h2>Counter with Redux</h2>
       <button onClick={handleIncrement}>Increament</button>
-      <div>0</div>
+      <div>{count}</div>
       <button onClick={handleDecrement}>Decreament</button>
     </div>
   );
