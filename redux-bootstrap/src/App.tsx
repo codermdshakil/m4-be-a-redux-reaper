@@ -1,11 +1,12 @@
-import { Button } from "./components/ui/button";
+import { Outlet } from "react-router";
+import Navber from "./components/layout/Navber";
 
 function App() {
   return (
-    <div className="w-5/6 mx-auto">
-      <h2>Basic todo Application</h2>
-      <div className="my-4">
-        <Button className="cursor-pointer ">Click me</Button>
+    <div>
+      <Navber />
+      <div className="w-5/6 mx-auto py-4">
+        <Outlet />
       </div>
     </div>
   );
