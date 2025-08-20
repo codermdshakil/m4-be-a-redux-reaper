@@ -20,13 +20,20 @@ const taskSlice = createSlice({
     addTask: (state, action: PayloadAction<ITask>) => {
       // generate id
       const id = generateSecureId(12);
-     
-      const taskData : ITask = {
+
+      const taskData: ITask = {
         ...action.payload,
         id,
         isCompleted: false,
       };
       state.tasks.push(taskData);
+    },
+    removeTask: (state, action) => {
+      const id = action.payload;
+      console.log(id, "payload");
+
+      // filter returns a new array
+      state.tasks = state.tasks.filter((task) => task.id !== id);
     },
   },
 });
@@ -41,6 +48,6 @@ export const selectorFilter = (state: RootState) => {
   return state.todo.filter;
 };
 
-export const { addTask } = taskSlice.actions;
+export const { addTask, removeTask } = taskSlice.actions;
 
 export default taskSlice.reducer;
