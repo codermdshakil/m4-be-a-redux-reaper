@@ -20,7 +20,7 @@ const TaskCard = ({task}:IProps) => {
                 "bg-yellow-500":task.priority === 'medium',
                 "bg-red-500":task.priority === 'high',
               })}></div>
-              <h3>{task.title}</h3>
+              <h3 className="text-xl font-semibold">{task.title}</h3>
             </div>
             <div className="flex items-center gap-4">
               <Trash2  className="size-6 text-red-500 cursor-pointer"/>
