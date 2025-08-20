@@ -31,6 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { addTask } from "@/redux/features/task/taskSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import { ChevronDownIcon } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -39,28 +41,39 @@ export function AddTaskModal() {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
 
+  const dispatch = useAppDispatch();
+
   const form = useForm();
 
   const onSubmit = (data: any) => {
+
     const createdAt = new Date(); // current date & time
     const dueDate = date || new Date(); // take from calendar (fallback: now)
 
     // calculate difference in days
-    const diffTime = dueDate.getTime() - createdAt.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // const diffTime = dueDate.getTime() - createdAt.getTime();
+    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     // 1000ms * 60s * 60m * 24h = 1 day
 
-    const finalObj = {
+    // const id = 
+    console.log();
+
+    const finalTask = {
       ...data,
       createdAt: createdAt.toISOString(),
       dueDate: dueDate.toISOString(),
-      durationInDays: diffDays, // difference between dueDate & createdAt
+      // durationInDays: diffDays, // difference between dueDate & createdAt
     };
 
-    console.log(finalObj, "final task");
+    console.log(finalTask, "final task");
+
+    // dispatch from here action
+    dispatch(addTask(finalTask))
+
     form.reset({
       Priority: undefined,
     });
+
     setDate(undefined); // reset calendar date
   };
 
@@ -76,7 +89,9 @@ export function AddTaskModal() {
 
         {/* use shadCn form */}
         <Form {...form}>
+
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
             {/* title field */}
             <FormField
               control={form.control}
@@ -118,7 +133,7 @@ export function AddTaskModal() {
             {/* priority field */}
             <FormField
               control={form.control}
-              name="Priority"
+              name="priority"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
@@ -144,7 +159,6 @@ export function AddTaskModal() {
             />
 
             {/* duedate is here */}
-
             <div className="flex flex-col w-full gap-3">
               <Label htmlFor="date" className="px-1">
                 Due Date
@@ -182,9 +196,11 @@ export function AddTaskModal() {
               </DialogClose>
               <Button type="submit">Create Task</Button>
             </DialogFooter>
+
           </form>
         </Form>
         {/* end of form  */}
+
       </DialogContent>
     </Dialog>
   );
