@@ -99,7 +99,7 @@ export function AddTaskModal() {
             {/* description field */}
             <FormField
               control={form.control}
-              name="des"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
