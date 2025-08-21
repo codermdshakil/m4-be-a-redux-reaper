@@ -55,13 +55,16 @@ const TaskCard = ({ task }: IProps) => {
                   "bg-red-500": task.priority === "high",
                 })}
               />
-              <div className="text-xl font-semibold">
-                {task.isCompleted ? (
-                  <del className="text-red-500">{task.title}</del>
-                ) : (
-                  <h3>{task.title}</h3>
-                )}
-              </div>
+              <h3
+                className={cn(
+                  {
+                    "line-through": task.isCompleted,
+                    "text-xl text-red-500": task.isCompleted,
+                  },
+                  "text-xl"
+                )}>
+                {task.title}
+              </h3>
             </div>
 
             <div className="flex items-center gap-4">
@@ -116,6 +119,7 @@ const TaskCard = ({ task }: IProps) => {
               </Dialog>
 
               <Checkbox
+                checked={task.isCompleted}
                 onClick={() => handleToggleCompleteState(task.id)}
                 className="size-5"
                 id="terms"
@@ -123,15 +127,7 @@ const TaskCard = ({ task }: IProps) => {
             </div>
           </div>
         </div>
-        <h4 className="ml-5">
-          {task.isCompleted ? (
-            <del className="text-red-500">
-              <p>{task.description}</p>
-            </del>
-          ) : (
-            <p>{task.description}</p>
-          )}
-        </h4>
+        <h4 className={cn({"text-red-500 line-through":task.isCompleted}, "ml-5")}>{task.description}</h4>
       </Card>
     </div>
   );
