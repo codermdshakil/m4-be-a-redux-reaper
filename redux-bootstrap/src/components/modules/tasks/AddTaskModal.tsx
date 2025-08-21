@@ -17,7 +17,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -31,51 +30,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { addTask } from "@/redux/features/task/taskSlice";
 import { useAppDispatch } from "@/redux/hooks";
-import { ChevronDownIcon } from "lucide-react";
-import React from "react";
-import { useForm } from "react-hook-form";
+import type { ITask } from "@/types/types";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 export function AddTaskModal() {
-  const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
-
   const dispatch = useAppDispatch();
 
   const form = useForm();
 
-  const onSubmit = (data: any) => {
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
 
-    const createdAt = new Date(); // current date & time
-    const dueDate = date || new Date(); // take from calendar (fallback: now)
 
-    // calculate difference in days
-    // const diffTime = dueDate.getTime() - createdAt.getTime();
-    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    // 1000ms * 60s * 60m * 24h = 1 day
-
-    // const id = 
-    console.log();
-
-    const finalTask = {
+    const newTaskData = {
       ...data,
-      createdAt: createdAt.toISOString(),
-      dueDate: dueDate.toISOString(),
-      // durationInDays: diffDays, // difference between dueDate & createdAt
-    };
+      dueDate:data.dueDate.toISOString()  
+    }
 
-    console.log(finalTask, "final task");
-
-    // dispatch from here action
-    dispatch(addTask(finalTask))
-
-    form.reset({
-      Priority: undefined,
-    });
-
-    setDate(undefined); // reset calendar date
-  };
+    dispatch(addTask(newTaskData as ITask));
+    form.reset();
+  };  
 
   return (
     <Dialog>
@@ -89,7 +67,6 @@ export function AddTaskModal() {
 
         {/* use shadCn form */}
         <Form {...form}>
-
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
             {/* title field */}
@@ -141,8 +118,7 @@ export function AddTaskModal() {
                     required={true}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    value={field.value || ""}
-                    >
+                    value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a Priority" />
@@ -158,37 +134,41 @@ export function AddTaskModal() {
               )}
             />
 
-            {/* duedate is here */}
-            <div className="flex flex-col w-full gap-3">
-              <Label htmlFor="date" className="px-1">
-                Due Date
-              </Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger className="w-full" asChild>
-                  <Button
-                    variant="outline"
-                    id="date"
-                    className="w-full justify-between font-normal">
-                    {date ? date.toLocaleDateString() : "Select date"}
-                    <ChevronDownIcon />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-full overflow-hidden p-0"
-                  align="start">
-                  <Calendar
-                    mode="single"
-                    required={true}
-                    selected={date}
-                    captionLayout="dropdown"
-                    onSelect={(date) => {
-                      setDate(date);
-                      setOpen(false);
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+            {/* duedate field */}
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Due Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          value={field.value || ""}
+                          className={cn(" flex justify-between font-normal")}>
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="w-4 h-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <DialogClose asChild>
@@ -196,11 +176,9 @@ export function AddTaskModal() {
               </DialogClose>
               <Button type="submit">Create Task</Button>
             </DialogFooter>
-
           </form>
         </Form>
         {/* end of form  */}
-
       </DialogContent>
     </Dialog>
   );

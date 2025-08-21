@@ -19,7 +19,7 @@ const Navber = () => {
   const { setTheme } = useTheme();
 
   return (
-    <div className="bg-gray-300">
+    <div className="shadow-sm bg-gray-300 ">
       <div className="w-5/6 mx-auto py-4 flex justify-between">
         <div>
           <NavigationMenu viewport={false}>
