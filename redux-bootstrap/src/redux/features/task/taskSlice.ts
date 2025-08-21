@@ -8,28 +8,54 @@ interface InitialState {
 }
 
 const initialState: InitialState = {
-  tasks: [],
+  tasks: [
+    {
+      id: "1",
+      title: "Finish React Project",
+      description:
+        "Complete the UI for the dashboard and integrate Redux store.",
+      dueDate: "2025-08-25T00:00:00.000Z", // ISO string
+      createAt: "2025-08-20T12:00:00.000Z",
+      isCompleted: false,
+      priority: "high",
+    },
+    {
+      id: "2",
+      title: "Read Database Chapter",
+      description: "Go through MySQL joins and practice 10 queries.",
+      dueDate: "2025-08-28T00:00:00.000Z",
+      createAt: "2025-08-21T10:30:00.000Z",
+      isCompleted: false,
+      priority: "medium",
+    },
+    {
+      id: "3",
+      title: "Buy Groceries",
+      description: "Milk, eggs, bread, and some fruits.",
+      dueDate: "2025-08-22T00:00:00.000Z",
+      createAt: "2025-08-21T08:15:00.000Z",
+      isCompleted: false,
+      priority: "low",
+    },
+  ],
   filter: "all",
 };
 
-type DraftData = Pick<ITask, "title" | "description" |"priority" |"dueDate">;
+type DraftData = Pick<ITask, "title" | "description" | "priority" | "dueDate">;
 
-
-// create task data 
-const createTask = (taskData:DraftData): ITask => {
+// create task data
+const createTask = (taskData: DraftData): ITask => {
   return {
     id: nanoid(),
-    isCompleted:false,
-    ...taskData
-  }
+    isCompleted: false,
+    ...taskData,
+  };
 };
-
 
 const taskSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-
     // create task
     addTask: (state, action: PayloadAction<ITask>) => {
       state.tasks.push(createTask(action.payload));
@@ -40,6 +66,13 @@ const taskSlice = createSlice({
 
       // filter returns a new array
       state.tasks = state.tasks.filter((task) => task.id !== id);
+    },
+    toggleCompleteState: (state, action: PayloadAction<string>) => {
+      state.tasks.forEach((task) =>
+        task.id === action.payload
+          ? (task.isCompleted = !task.isCompleted)
+          : task
+      );
     },
   },
 });
@@ -54,6 +87,6 @@ export const selectorFilter = (state: RootState) => {
   return state.todo.filter;
 };
 
-export const { addTask, removeTask } = taskSlice.actions;
+export const { addTask, removeTask , toggleCompleteState} = taskSlice.actions;
 
 export default taskSlice.reducer;

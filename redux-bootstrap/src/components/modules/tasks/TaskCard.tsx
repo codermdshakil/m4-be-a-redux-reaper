@@ -11,7 +11,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { removeTask } from "@/redux/features/task/taskSlice";
+import {
+  removeTask,
+  toggleCompleteState,
+} from "@/redux/features/task/taskSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import type { ITask } from "@/types/types";
 import { Trash2 } from "lucide-react";
@@ -33,6 +36,12 @@ const TaskCard = ({ task }: IProps) => {
     }
   };
 
+  // handle toggle complete state
+
+  const handleToggleCompleteState = (id: string) => {
+    dispatch(toggleCompleteState(id));
+  };
+
   return (
     <div>
       <Card className="w-full p-3 mb-4">
@@ -46,7 +55,13 @@ const TaskCard = ({ task }: IProps) => {
                   "bg-red-500": task.priority === "high",
                 })}
               />
-              <h3 className="text-xl font-semibold">{task.title}</h3>
+              <div className="text-xl font-semibold">
+                {task.isCompleted ? (
+                  <del className="text-red-500">{task.title}</del>
+                ) : (
+                  <h3>{task.title}</h3>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -100,11 +115,23 @@ const TaskCard = ({ task }: IProps) => {
                 </DialogContent>
               </Dialog>
 
-              <Checkbox className="size-5" id="terms" />
+              <Checkbox
+                onClick={() => handleToggleCompleteState(task.id)}
+                className="size-5"
+                id="terms"
+              />
             </div>
           </div>
         </div>
-        <h4>{task.description}</h4>
+        <h4 className="ml-5">
+          {task.isCompleted ? (
+            <del className="text-red-500">
+              <p>{task.description}</p>
+            </del>
+          ) : (
+            <p>{task.description}</p>
+          )}
+        </h4>
       </Card>
     </div>
   );
