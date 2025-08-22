@@ -74,6 +74,20 @@ const taskSlice = createSlice({
           : task
       );
     },
+    updateTask: (state, action: PayloadAction<ITask>) => {
+
+      console.log(action.payload, 'payload');
+      const updatedTask = action.payload;
+
+      const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
+
+      if (index !== -1) {
+        state.tasks[index] = {
+          ...state.tasks[index], // keep old values
+          ...updatedTask, // overwrite with new values
+        };
+      }
+    },
   },
 });
 
@@ -87,6 +101,6 @@ export const selectorFilter = (state: RootState) => {
   return state.todo.filter;
 };
 
-export const { addTask, removeTask , toggleCompleteState} = taskSlice.actions;
+export const { addTask, removeTask, toggleCompleteState, updateTask } = taskSlice.actions;
 
 export default taskSlice.reducer;
