@@ -111,7 +111,6 @@ const TaskCard = ({ task }: IProps) => {
                 {task.title}
               </h3>
             </div>
-
             <div className="flex items-center gap-4">
               <Dialog>
                 <DialogTrigger asChild>
@@ -171,7 +170,7 @@ const TaskCard = ({ task }: IProps) => {
                 id="terms"
               />
 
-              {/* here start edit */}
+              {/* here update task edit */}
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline"><Edit/></Button>

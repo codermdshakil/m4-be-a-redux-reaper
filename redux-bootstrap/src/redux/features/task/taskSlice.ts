@@ -17,7 +17,7 @@ const initialState: InitialState = {
       dueDate: "2025-08-25T00:00:00.000Z", // ISO string
       createAt: "2025-08-20T12:00:00.000Z",
       isCompleted: false,
-      priority: "high",
+      priority: "low",
     },
     {
       id: "2",
@@ -35,7 +35,7 @@ const initialState: InitialState = {
       dueDate: "2025-08-22T00:00:00.000Z",
       createAt: "2025-08-21T08:15:00.000Z",
       isCompleted: false,
-      priority: "low",
+      priority: "high",
     },
   ],
   filter: "all",
@@ -75,8 +75,7 @@ const taskSlice = createSlice({
       );
     },
     updateTask: (state, action: PayloadAction<ITask>) => {
-
-      console.log(action.payload, 'payload');
+      console.log(action.payload, "payload");
       const updatedTask = action.payload;
 
       const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
@@ -88,19 +87,44 @@ const taskSlice = createSlice({
         };
       }
     },
+    taskFilter: (
+      state,
+      action: PayloadAction<"all" | "low" | "medium" | "high">
+    ) => {
+      state.filter = action.payload;
+    },
   },
 });
 
 // export selectors of tasks
 
 export const selectorTasks = (state: RootState) => {
-  return state.todo.tasks;
+
+  const filter = state.todo.filter;
+
+  if(filter === 'low'){
+    return state.todo.tasks.filter((task) => task.priority === "low");
+  }else if(filter === 'medium'){
+    return state.todo.tasks.filter((task) => task.priority === "medium");
+  }else if(filter === 'high'){
+    return state.todo.tasks.filter((task) => task.priority === "high");
+  }
+  else{
+     return state.todo.tasks;
+  }
+
 };
 
 export const selectorFilter = (state: RootState) => {
   return state.todo.filter;
 };
 
-export const { addTask, removeTask, toggleCompleteState, updateTask } = taskSlice.actions;
+export const {
+  addTask,
+  removeTask,
+  toggleCompleteState,
+  updateTask,
+  taskFilter,
+} = taskSlice.actions;
 
 export default taskSlice.reducer;
