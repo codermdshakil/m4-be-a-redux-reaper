@@ -18,22 +18,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { addUser } from "@/redux/features/user/userSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { useState } from "react";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 export function AddUserModal() {
   const dispatch = useAppDispatch();
 
+  // handle dialog
+  const [open, setOpen] = useState(false);
+
   const form = useForm();
-
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-
-    const {name} = data;
+    const { name } = data;
     dispatch(addUser(name));
+    setOpen(false)
     form.reset();
-  };  
+  };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Add User</Button>
       </DialogTrigger>
@@ -45,7 +48,6 @@ export function AddUserModal() {
         {/* use shadCn form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
             {/* title field */}
             <FormField
               control={form.control}
@@ -64,10 +66,6 @@ export function AddUserModal() {
                 </FormItem>
               )}
             />
-
-            
-           
- 
 
             <DialogFooter>
               <DialogClose asChild>

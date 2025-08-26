@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 import {
   removeTask,
   toggleCompleteState,
-  updateTask
+  updateTask,
 } from "@/redux/features/task/taskSlice";
 import { selectorUsers } from "@/redux/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -51,7 +51,6 @@ interface IProps {
 }
 
 const TaskCard = ({ task }: IProps) => {
-  
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
@@ -89,21 +88,19 @@ const TaskCard = ({ task }: IProps) => {
     dispatch(updateTask(updatedData));
   };
 
-  // get assigedTo user 
+  // get assigedTo user
   // 1. get id
   // 2. get all user
   // 3. find user with id
 
   // 1
-  console.log(task, 'task');
-  const {assignedTo} = task;
+  console.log(task, "task");
+  const { assignedTo } = task;
 
-  const {users} = useAppSelector(selectorUsers);
+  const { users } = useAppSelector(selectorUsers);
 
-  const assignedUser = users.find((user:IUser) => user.id == assignedTo);
-  console.log(assignedUser, 'finded user');
-
- 
+  const assignedUser = users.find((user: IUser) => user.id == assignedTo);
+  console.log(assignedUser, "finded user");
 
   return (
     <div>
@@ -191,7 +188,9 @@ const TaskCard = ({ task }: IProps) => {
               {/* here update task edit */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline"><Edit/></Button>
+                  <Button variant="outline">
+                    <Edit />
+                  </Button>
                 </DialogTrigger>
                 <DialogContent
                   aria-describedby={undefined}
@@ -333,7 +332,10 @@ const TaskCard = ({ task }: IProps) => {
           )}>
           {task.description}
         </h4>
-        {assignedUser ?  <h4 className="text-lg">Assigned To : {assignedUser?.name}</h4>: "No One"}
+        <h4 className="text-lg">
+          {" "}
+          Assigned To : {assignedUser ? assignedUser.name : "No One"}
+        </h4>
       </Card>
     </div>
   );
