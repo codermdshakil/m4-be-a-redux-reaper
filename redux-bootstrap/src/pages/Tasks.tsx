@@ -10,8 +10,11 @@ const Tasks = () => {
   // const tasks = useAppSelector((state) => state.todo.tasks);
   const dispatch = useAppDispatch();
   const tasks = useAppSelector(selectorTasks);
+  
+
 
   const sortedTasks = sortTasks(tasks);
+  console.log(sortedTasks, 'tasks');
 
 
   return (

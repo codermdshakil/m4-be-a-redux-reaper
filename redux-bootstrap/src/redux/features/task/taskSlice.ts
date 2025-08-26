@@ -18,6 +18,7 @@ const initialState: InitialState = {
       createAt: "2025-08-20T12:00:00.000Z",
       isCompleted: false,
       priority: "low",
+      assignedTo: "1",
     },
     {
       id: "2",
@@ -27,6 +28,7 @@ const initialState: InitialState = {
       createAt: "2025-08-21T10:30:00.000Z",
       isCompleted: false,
       priority: "medium",
+      assignedTo: "3",
     },
     {
       id: "3",
@@ -36,6 +38,7 @@ const initialState: InitialState = {
       createAt: "2025-08-21T08:15:00.000Z",
       isCompleted: false,
       priority: "high",
+      assignedTo: "2",
     },
     {
       id: "4",
@@ -45,12 +48,13 @@ const initialState: InitialState = {
       createAt: "2025-08-21T08:15:00.000Z",
       isCompleted: false,
       priority: "high",
+      assignedTo: "2",
     },
   ],
   filter: "all",
 };
 
-type DraftData = Pick<ITask, "title" | "description" | "priority" | "dueDate">;
+type DraftData = Pick<ITask, "title" | "description" | "priority" | "dueDate" | "assignedTo">;
 
 // create task data
 const createTask = (taskData: DraftData): ITask => {
@@ -67,6 +71,7 @@ const taskSlice = createSlice({
   reducers: {
     // create task
     addTask: (state, action: PayloadAction<ITask>) => {
+      console.log(createTask(action.payload), 'add task');
       state.tasks.push(createTask(action.payload));
     },
     removeTask: (state, action) => {
@@ -107,20 +112,17 @@ const taskSlice = createSlice({
 // export selectors of tasks
 
 export const selectorTasks = (state: RootState) => {
-
   const filter = state.todo.filter;
 
-  if(filter === 'low'){
+  if (filter === "low") {
     return state.todo.tasks.filter((task) => task.priority === "low");
-  }else if(filter === 'medium'){
+  } else if (filter === "medium") {
     return state.todo.tasks.filter((task) => task.priority === "medium");
-  }else if(filter === 'high'){
+  } else if (filter === "high") {
     return state.todo.tasks.filter((task) => task.priority === "high");
+  } else {
+    return state.todo.tasks;
   }
-  else{
-     return state.todo.tasks;
-  }
-
 };
 
 export const selectorFilter = (state: RootState) => {

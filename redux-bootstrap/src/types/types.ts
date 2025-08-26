@@ -6,6 +6,7 @@ export interface ITask {
   createAt?: string;
   isCompleted?:boolean,
   priority: "all"|"high"| "medium"| "low";
+  assignedTo:string | null;
 }
 
 export interface IUser{

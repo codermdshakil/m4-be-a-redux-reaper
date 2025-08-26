@@ -7,7 +7,20 @@ interface InitialState {
 }
 
 const initialState: InitialState = {
-  users: [],
+  users: [
+    {
+      id:'1',
+      name:"Shakil Ahmed"
+    },
+    {
+      id:'2',
+      name:"Noyon Rahman"
+    },
+    {
+      id:'3',
+      name:"Nadim Hassan"
+    }
+  ],
 };
 
 // create user data
@@ -34,7 +47,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { addUser , removeUser} = userSlice.actions;
+export const { addUser, removeUser } = userSlice.actions;
 
 export const selectorUsers = (state: RootState) => {
   return state.users;
