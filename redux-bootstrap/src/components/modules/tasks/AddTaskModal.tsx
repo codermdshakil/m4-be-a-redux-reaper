@@ -52,6 +52,7 @@ export function AddTaskModal() {
     }
 
     dispatch(addTask(newTaskData as ITask));
+    
     form.reset();
   };  
 

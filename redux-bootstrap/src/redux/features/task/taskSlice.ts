@@ -37,6 +37,15 @@ const initialState: InitialState = {
       isCompleted: false,
       priority: "high",
     },
+    {
+      id: "4",
+      title: "Buy Groceries",
+      description: "Milk, eggs, bread, and some fruits.",
+      dueDate: "2025-08-22T00:00:00.000Z",
+      createAt: "2025-08-21T08:15:00.000Z",
+      isCompleted: false,
+      priority: "high",
+    },
   ],
   filter: "all",
 };
@@ -62,7 +71,6 @@ const taskSlice = createSlice({
     },
     removeTask: (state, action) => {
       const id = action.payload;
-      console.log(id, "payload");
 
       // filter returns a new array
       state.tasks = state.tasks.filter((task) => task.id !== id);
