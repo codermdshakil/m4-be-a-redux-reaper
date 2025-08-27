@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 export function AddTaskModal() {
   
@@ -44,8 +44,10 @@ export function AddTaskModal() {
 
 
   const form = useForm();
-  const onSubmit  = () => {
-     console.log('hello world');
+  const onSubmit: SubmitHandler<FieldValues>  = (data) => {
+     console.log(data);
+     form.reset();
+     setOpen(false);
   };  
 
   return (
@@ -127,33 +129,7 @@ export function AddTaskModal() {
               )}
             />
 
-            {/* users field */}
-            <FormField
-              control={form.control}
-              name="assignedTo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assign To</FormLabel>
-                  <Select
-                    required={true}
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value || ""}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a User" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="w-full">
-                      
-                     {/* {
-                      users.map((user) => <SelectItem key={user.id} value={user.id}> {user.name} </SelectItem>)
-                     } */}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+           
 
             {/* duedate field */}
             <FormField

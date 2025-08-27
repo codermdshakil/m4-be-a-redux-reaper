@@ -1,8 +1,11 @@
 import { AddTaskModal } from "@/components/modules/tasks/AddTaskModal";
+import TaskCard from "@/components/modules/tasks/TaskCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetTasksQuery } from "@/redux/api/baseAPI";
 
 const Tasks = () => {
-  
+  const { data, isLoading, isError } = useGetTasksQuery(undefined);
+  console.log(data, isLoading, isError, "test");
 
   return (
     <div>
@@ -24,9 +27,9 @@ const Tasks = () => {
           <AddTaskModal />
         </div>
       </div>
-      {/* {sortedTasks.map((task: ITask) => (
-        <TaskCard key={task.id} task={task} />
-      ))} */}
+      {isLoading && <h3>Loading...</h3>}
+      {!isLoading &&
+        data.tasks.map((task: any) => <TaskCard key={task._id} task={task} />)}
     </div>
   );
 };

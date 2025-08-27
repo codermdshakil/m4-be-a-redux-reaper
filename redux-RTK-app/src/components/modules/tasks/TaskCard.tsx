@@ -283,8 +283,7 @@ const TaskCard = ({ task }: IProps) => {
           )}>
           {task.description}
         </h4>
-        <h4 className="text-lg">
-       
+        <h4 className="text-sm ml-5">
           Assigned To : 
         </h4>
       </Card>
