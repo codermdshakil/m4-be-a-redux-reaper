@@ -74,7 +74,7 @@ const TaskCard = ({ task }: IProps) => {
                   },
                   "text-xl"
                 )}>
-                Title
+                {task.title}
               </h3>
             </div>
             <div className="flex items-center gap-4">

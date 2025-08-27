@@ -31,24 +31,36 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useCreateTaskMutation } from "@/redux/api/baseAPI";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 
 export function AddTaskModal() {
-  
-
   // handle dialog
   const [open, setOpen] = useState(false);
-
-
   const form = useForm();
-  const onSubmit: SubmitHandler<FieldValues>  = (data) => {
-     console.log(data);
-     form.reset();
-     setOpen(false);
-  };  
+
+  // handle post data 
+  const [createTask , {data, isLoading, isError}] = useCreateTaskMutation()
+
+
+  console.log(data, 'data');
+  
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+
+    const taskData = {
+      ...data,
+      isCompleted: false,
+    };
+
+    const res = await createTask(taskData).unwrap();
+    console.log("inside fun", res);
+
+    form.reset();
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -63,7 +75,6 @@ export function AddTaskModal() {
         {/* use shadCn form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
             {/* title field */}
             <FormField
               control={form.control}
@@ -128,8 +139,6 @@ export function AddTaskModal() {
                 </FormItem>
               )}
             />
-
-           
 
             {/* duedate field */}
             <FormField
