@@ -1,5 +1,6 @@
 import { Menu, X } from "lucide-react";
 import React, { useState } from "react";
+import { Link } from "react-router";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,26 +10,29 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto  px-6 md:px-0">
         <div className="flex justify-between h-16 items-center">
           <div className="flex  items-center text-2xl font-bold ">
-            <a href="/books" className="text-white">LibraryMS</a>
+            <Link to="/books" className="text-white">
+              LibraryMS
+            </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <a
-              href="/books"
-              className="text-gray-200 hover:text-white transition">
+            <Link
+              className="text-gray-200 hover:text-white transition"
+              to={"/books"}>
               All Books
-            </a>
-            <a
-              href="/create-book"
-              className="text-gray-200 hover:text-white transition">
+            </Link>
+            <Link
+              className="text-gray-200 hover:text-white transition"
+              to={"/create-book"}>
               Add Book
-            </a>
-            <a
-              href="/borrow-summary"
-              className="text-gray-200 hover:text-white transition">
+            </Link>
+            <Link
+              className="text-gray-200 hover:text-white transition"
+              to={"/borrow-summary"}>
+              {" "}
               Borrow Summary
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -49,7 +53,7 @@ const Navbar: React.FC = () => {
             <a
               href="#home"
               className="block text-gray-200 hover:text-white transition">
-             All Books
+              All Books
             </a>
             <a
               href="#about"
