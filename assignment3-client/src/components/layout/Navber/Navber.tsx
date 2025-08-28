@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
             <a
-              href="#home"
+              href="/books"
               className="text-gray-200 hover:text-white transition">
               All Books
             </a>
