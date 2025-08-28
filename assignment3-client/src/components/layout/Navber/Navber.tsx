@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto  px-6 md:px-0">
         <div className="flex justify-between h-16 items-center">
           <div className="flex  items-center text-2xl font-bold ">
-            <a href="/" className="text-white">LibraryMS</a>
+            <a href="/books" className="text-white">LibraryMS</a>
           </div>
 
           {/* Desktop Menu */}
@@ -20,12 +20,12 @@ const Navbar: React.FC = () => {
               All Books
             </a>
             <a
-              href="#about"
+              href="/create-book"
               className="text-gray-200 hover:text-white transition">
               Add Book
             </a>
             <a
-              href="#services"
+              href="/borrow-summary"
               className="text-gray-200 hover:text-white transition">
               Borrow Summary
             </a>
