@@ -4,7 +4,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetTasksQuery } from "@/redux/api/baseAPI";
 
 const Tasks = () => {
-  const { data, isLoading, isError } = useGetTasksQuery(undefined);
+  const { data, isLoading, isError } = useGetTasksQuery(undefined, {
+    pollingInterval:30000,
+    refetchOnFocus:true,
+    refetchOnReconnect:true,
+    refetchOnMountOrArgChange:true
+  });
   console.log(data, isLoading, isError, "test");
 
   return (

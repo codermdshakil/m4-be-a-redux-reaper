@@ -42,7 +42,7 @@ export function AddTaskModal() {
   const [open, setOpen] = useState(false);
   const form = useForm();
 
-  // handle post data 
+  // handle post task
   const [createTask , {data, isLoading, isError}] = useCreateTaskMutation()
 
 
@@ -55,6 +55,7 @@ export function AddTaskModal() {
       isCompleted: false,
     };
 
+    // handle create task
     const res = await createTask(taskData).unwrap();
     console.log("inside fun", res);
 
