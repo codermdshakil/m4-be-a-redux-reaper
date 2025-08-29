@@ -21,17 +21,16 @@ export const baseApi = createApi({
       }),
       invalidatesTags: ["book"],
     }),
-
-    // GET a single book
-    getSingleBook: builder.query({
-      query: (bookId: string) => ({
-        url: `/books/${bookId}`,
-        method: "GET",
-        providesTags: ["book"],
-      }),
+    // get a single book details
+    getSingleBook: builder.query<IBook, string>({
+      query: (bookId) => `/books/${bookId}`,
+      providesTags: ["book"],
     }),
     // update method
-    updateSingleBook: builder.mutation<any, { bookId: string; updatedData: Partial<IBook>}>({
+    updateSingleBook: builder.mutation<
+      any,
+      { bookId: string; updatedData: Partial<IBook> }
+    >({
       query: ({ bookId, updatedData }) => ({
         url: `/books/${bookId}`,
         method: "PATCH",
@@ -56,5 +55,5 @@ export const {
   useCreateBookMutation,
   useDeleteBookMutation,
   useGetSingleBookQuery,
-  useUpdateSingleBookMutation
+  useUpdateSingleBookMutation,
 } = baseApi;

@@ -44,6 +44,7 @@ import type { IBook } from "@/types/types";
 import { BookOpen, Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
+import { Link } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
 interface BooksTableProps {
@@ -124,6 +125,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
     }
   };
 
+ 
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -135,6 +137,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
             <TableHead>ISBN</TableHead>
             <TableHead>Copies</TableHead>
             <TableHead>Availability</TableHead>
+            <TableHead>View Book</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -149,6 +152,15 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
               <TableCell>
                 {book.available ? "Available" : "Not Available"}
               </TableCell>
+              <TableCell>
+                <Link to={`/books/${book._id}`}>
+                  <Button
+                    size="sm">
+                    View
+                  </Button>
+                </Link>
+              </TableCell>
+
               <TableCell className="flex gap-2">
                 {/* Update Dialog */}
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -156,6 +168,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                     <Button
                       onClick={() => handleOpenUpdate(book)}
                       size="sm"
+                      className="cursor-pointer"
                       variant="ghost">
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -211,7 +224,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                                 <Select
                                   onValueChange={field.onChange}
                                   value={field.value}>
-                                  <SelectTrigger  className="w-full">
+                                  <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select genre" />
                                   </SelectTrigger>
                                   <SelectContent className="w-full">
@@ -326,6 +339,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                   <DialogTrigger asChild>
                     <Button
                       size="sm"
+                      className="cursor-pointer"
                       variant="ghost"
                       onClick={() => setDeleteBookId(book._id)}>
                       <Trash2 className="h-4 w-4 text-red-500" />
