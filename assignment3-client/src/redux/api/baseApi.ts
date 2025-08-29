@@ -1,4 +1,9 @@
-import type { IBook, IBorrowBookRequest, IBorrowBookResponse } from "@/types/types";
+import type {
+  IBook,
+  IBorrowBookRequest,
+  IBorrowBookResponse,
+  IBorrowSummary,
+} from "@/types/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
@@ -57,10 +62,14 @@ export const baseApi = createApi({
         method: "POST",
         body: borrowData,
       }),
-      invalidatesTags: ["book"], // refresh book list if copies updated
+      invalidatesTags: ["book"], 
     }),
 
-
+    // borrow summary
+    getBorrowSummary: builder.query<IBorrowSummary[], void>({
+      query: () => "/borrow",
+      providesTags: ["book"],  
+    }),
   }),
 });
 
@@ -70,5 +79,6 @@ export const {
   useDeleteBookMutation,
   useGetSingleBookQuery,
   useUpdateSingleBookMutation,
-  useBorrowBookMutation
+  useBorrowBookMutation,
+  useGetBorrowSummaryQuery,
 } = baseApi;

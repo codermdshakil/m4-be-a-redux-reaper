@@ -53,7 +53,7 @@ import { format } from "date-fns";
 import { BookOpen, CalendarIcon, Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 
 interface BooksTableProps {
@@ -136,6 +136,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
 
   // borrow Book
   const [open2, setOpen2] = useState(false);
+   const navigate = useNavigate();
 
   const [borrowBook] = useBorrowBookMutation();
   const form2 = useForm();
@@ -152,7 +153,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
     }
 
     try {
-      const response = await borrowBook({
+       await borrowBook({
         book: selectedBook._id!, // bookId
         quantity,
         dueDate: data.dueDate.toISOString(), // make sure date is string
@@ -162,6 +163,8 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
 
       setOpen2(false);
       form2.reset();
+      navigate("/borrow-summary");
+
     } catch (error: any) {
       console.error("Borrow failed:", error);
       toast.error(error?.data?.message || "Failed to borrow book");
@@ -169,7 +172,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto h-screen">
       <Table>
         <TableHeader>
           <TableRow>
@@ -199,8 +202,8 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                   <Button size="sm">View</Button>
                 </Link>
               </TableCell>
-
               <TableCell className="flex gap-2">
+
                 {/* Update Dialog */}
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>

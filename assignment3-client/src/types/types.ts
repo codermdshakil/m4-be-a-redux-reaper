@@ -22,3 +22,11 @@ export interface IBorrowBookResponse {
   message: string;
   data: any; // or you can define BorrowBook interface if you want
 }
+
+export interface IBorrowSummary {
+  totalQuantity: number;
+  book: {
+    title: string;
+    isbn: string;
+  };
+}

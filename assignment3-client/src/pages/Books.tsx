@@ -13,7 +13,7 @@ const Books = () => {
 
   return (
     <div>
-      <h1>Books Component</h1>
+      <h1 className="text-center font-semibold my-4 text-2xl">Books List</h1>
       {isLoading ? <h3>Loading...</h3> : <BooksShow books={data?.data} />}
     </div>
   );

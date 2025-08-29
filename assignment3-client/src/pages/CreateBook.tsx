@@ -25,6 +25,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateBookMutation } from "@/redux/api/baseApi";
 import type { IBook } from "@/types/types";
+import { useNavigate } from "react-router";
+import { toast, ToastContainer } from "react-toastify";
 
 // ---- Schema ----
 const BookSchema = z.object({
@@ -50,7 +52,6 @@ const BookSchema = z.object({
 type BookFormValues = z.infer<typeof BookSchema>;
 
 const CreateBook = () => {
-  
   const [createBook, { data, isLoading, isError }] = useCreateBookMutation();
 
   const form = useForm<BookFormValues>({
@@ -65,19 +66,23 @@ const CreateBook = () => {
     },
   });
 
+    const navigate = useNavigate();
+
   const onSubmit = async (values: BookFormValues) => {
-    const payload: IBook = {
-      ...values,
-      copies: parseInt(values.copies) as number,
-      available: values.available ?? true,
-    };
+    try {
+      const payload: IBook = {
+        ...values,
+        copies: parseInt(values.copies) as number,
+        available: values.available ?? true,
+      };
 
-    console.log(payload, "payload");
+      await createBook(payload);
+      toast.success("Created a new Book!!");
+      navigate("/books")
 
-    const data = await createBook(payload);
-
-    console.log("📚 Book created:", data);
-    // TODO: replace with RTK Query mutation call
+    } catch (err) {
+      toast.error("Something want wrong!");
+    }
   };
 
   return (
@@ -87,11 +92,8 @@ const CreateBook = () => {
           <CardTitle className="text-2xl">Create Book</CardTitle>
         </CardHeader>
         <CardContent>
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-
-
               {/* Title */}
               <FormField
                 control={form.control}
@@ -166,7 +168,7 @@ const CreateBook = () => {
                   <FormItem>
                     <FormLabel>ISBN</FormLabel>
                     <FormControl>
-                      <Input  required placeholder="9780132350884" {...field} />
+                      <Input required placeholder="9780132350884" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -181,7 +183,13 @@ const CreateBook = () => {
                   <FormItem>
                     <FormLabel>Copies</FormLabel>
                     <FormControl>
-                      <Input  required type="number" min={0} step={1} {...field} />
+                      <Input
+                        required
+                        type="number"
+                        min={0}
+                        step={1}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -197,7 +205,7 @@ const CreateBook = () => {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea
-                       required={true}
+                        required={true}
                         rows={4}
                         placeholder="Short summary..."
                         {...field}
@@ -222,7 +230,7 @@ const CreateBook = () => {
                     </div>
                     <FormControl>
                       <Switch
-                       required={true}
+                        required={true}
                         checked={!!field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -239,6 +247,7 @@ const CreateBook = () => {
           </Form>
         </CardContent>
       </Card>
+      <ToastContainer />
     </div>
   );
 };

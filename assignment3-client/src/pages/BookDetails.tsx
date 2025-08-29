@@ -8,9 +8,16 @@ const BookDetails = () => {
   const { bookId } = useParams();
 
   // fetch book details
-  const { data: book , isLoading, isError } = useGetSingleBookQuery(bookId);
-
- 
+  const {
+    data: book,
+    isLoading,
+    isError,
+  } = useGetSingleBookQuery(bookId, {
+    pollingInterval: 30000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+  });
 
   if (isLoading) {
     return <p className="text-center text-gray-500">Loading book details...</p>;
@@ -24,7 +31,7 @@ const BookDetails = () => {
     book?.data;
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
+    <div className="max-w-3xl h-screen mx-auto mt-10">
       <Card className="shadow-lg rounded-2xl border border-gray-200">
         <CardHeader className="flex items-center gap-3">
           <BookOpen className="w-6 h-6 text-blue-600" />
@@ -42,22 +49,22 @@ const BookDetails = () => {
             <p className="ml-2 text-lg">{genre}</p>
           </div>
 
-          <div  className="flex items-center">
+          <div className="flex items-center">
             <p className="font-semibold">ISBN:</p>
             <p className="ml-2 text-lg">{isbn}</p>
           </div>
 
-          <div  className="flex items-center">
+          <div className="flex items-center">
             <p className="font-semibold">Description:</p>
             <p className="text-gray-700 ml-2 text-lg">{description}</p>
           </div>
 
-          <div  className="flex items-center">
+          <div className="flex items-center">
             <p className="font-semibold ">Copies:</p>
             <p className="ml-2 text-lg">{copies}</p>
           </div>
 
-          <div  className="flex items-center">
+          <div className="flex items-center">
             <p className="font-semibold">Available:</p>
             <span
               className={`px-3 ml-2 py-1 rounded-full text-sm font-medium ${

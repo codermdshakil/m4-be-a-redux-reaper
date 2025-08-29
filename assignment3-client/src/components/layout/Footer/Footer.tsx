@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 const Footer = () => {
   return (
     <div>
@@ -16,18 +18,29 @@ const Footer = () => {
 
             {/* Middle - Nav Links */}
             <div className="flex space-x-6 mb-4 md:mb-0">
-              <a href="#home" className="hover:text-white transition">
-                Home
-              </a>
-              <a href="#books" className="hover:text-white transition">
-                Books
-              </a>
-              <a href="#about" className="hover:text-white transition">
-                About
-              </a>
-              <a href="#contact" className="hover:text-white transition">
-                Contact
-              </a>
+              
+
+               
+               <Link
+                className="hover:text-white transition"
+                to={"/books"}>
+                {" "}
+              All Books
+              </Link>
+               <Link
+                className="hover:text-white transition"
+                to={"/create-book"}>
+                {" "}
+               Add Book 
+              </Link>
+               <Link
+                className="hover:text-white transition"
+                to={"/borrow-summary"}>
+                {" "}
+                Borrow Summary
+              </Link>
+
+             
             </div>
 
             {/* Right Side - Copyright */}
