@@ -211,10 +211,10 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                                 <Select
                                   onValueChange={field.onChange}
                                   value={field.value}>
-                                  <SelectTrigger>
+                                  <SelectTrigger  className="w-full">
                                     <SelectValue placeholder="Select genre" />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className="w-full">
                                     <SelectItem value="FICTION">
                                       Fiction
                                     </SelectItem>
