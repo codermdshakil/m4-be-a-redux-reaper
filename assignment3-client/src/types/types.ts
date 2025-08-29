@@ -9,3 +9,16 @@ export interface IBook {
   copies: number;
   available?: boolean;
 }
+
+
+export interface IBorrowBookRequest {
+  book: string;      // bookId
+  quantity: number;
+  dueDate: string;   // ISO date string
+}
+
+export interface IBorrowBookResponse {
+  success: boolean;
+  message: string;
+  data: any; // or you can define BorrowBook interface if you want
+}

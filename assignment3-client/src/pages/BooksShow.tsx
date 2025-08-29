@@ -1,5 +1,6 @@
 import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogClose,
@@ -20,6 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -36,12 +42,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import {
+  useBorrowBookMutation,
   useDeleteBookMutation,
   useUpdateSingleBookMutation,
 } from "@/redux/api/baseApi";
 import type { IBook } from "@/types/types";
-import { BookOpen, Edit, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { BookOpen, CalendarIcon, Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 import { Link } from "react-router";
@@ -125,7 +134,40 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
     }
   };
 
- 
+  // borrow Book
+  const [open2, setOpen2] = useState(false);
+
+  const [borrowBook] = useBorrowBookMutation();
+  const form2 = useForm();
+
+  const onSubmitForBorrowBook = async (data: any) => {
+    if (!selectedBook) return;
+
+    const quantity = Number(data.quantity);
+
+    // validation before API call
+    if (quantity > selectedBook.copies) {
+      toast.error("Quantity cannot exceed available copies!");
+      return;
+    }
+
+    try {
+      const response = await borrowBook({
+        book: selectedBook._id!, // bookId
+        quantity,
+        dueDate: data.dueDate.toISOString(), // make sure date is string
+      }).unwrap();
+
+      toast.success("Book borrowed successfully");
+
+      setOpen2(false);
+      form2.reset();
+    } catch (error: any) {
+      console.error("Borrow failed:", error);
+      toast.error(error?.data?.message || "Failed to borrow book");
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -154,10 +196,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
               </TableCell>
               <TableCell>
                 <Link to={`/books/${book._id}`}>
-                  <Button
-                    size="sm">
-                    View
-                  </Button>
+                  <Button size="sm">View</Button>
                 </Link>
               </TableCell>
 
@@ -191,7 +230,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                             <FormItem>
                               <FormLabel>Title</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input {...field} required />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -206,7 +245,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                             <FormItem>
                               <FormLabel>Author</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input {...field} required />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -222,6 +261,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                               <FormLabel>Genre</FormLabel>
                               <FormControl>
                                 <Select
+                                  required={true}
                                   onValueChange={field.onChange}
                                   value={field.value}>
                                   <SelectTrigger className="w-full">
@@ -262,7 +302,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                             <FormItem>
                               <FormLabel>ISBN</FormLabel>
                               <FormControl>
-                                <Input {...field} />
+                                <Input {...field} required />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -277,7 +317,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                             <FormItem>
                               <FormLabel>Copies</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} />
+                                <Input type="number" required {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -292,7 +332,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                             <FormItem>
                               <FormLabel>Description</FormLabel>
                               <FormControl>
-                                <Textarea {...field} rows={3} />
+                                <Textarea {...field} required rows={3} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -313,6 +353,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                               </div>
                               <FormControl>
                                 <Switch
+                                  required={true}
                                   checked={!!field.value}
                                   onCheckedChange={field.onChange}
                                 />
@@ -372,9 +413,110 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                 </Dialog>
 
                 {/* Borrow Button */}
-                <Button size="sm" variant="ghost" disabled={!book.available}>
-                  <BookOpen className="h-4 w-4" />
-                </Button>
+
+                <Dialog open={open2} onOpenChange={setOpen2}>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="cursor-pointer"
+                      variant="ghost"
+                      disabled={!book.available}
+                      onClick={() => {
+                        setSelectedBook(book); // ✅ store current book
+                        setOpen2(true);
+                      }}>
+                      <BookOpen className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent
+                    aria-describedby={undefined}
+                    className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle className="text-center">
+                        Borrow Book
+                      </DialogTitle>
+                    </DialogHeader>
+
+                    {/* use shadCn form */}
+                    <Form {...form2}>
+                      <form
+                        onSubmit={form2.handleSubmit(onSubmitForBorrowBook)}
+                        className="space-y-8">
+                        {/* quantity field */}
+                        <FormField
+                          control={form2.control}
+                          name="quantity"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Quantity</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  required
+                                  placeholder="Enter quantity"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                  onChange={(e) =>
+                                    field.onChange(e.target.valueAsNumber)
+                                  } // ✅ store as number
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* duedate field */}
+                        <FormField
+                          control={form2.control}
+                          name="dueDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Due Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      value={field.value || ""}
+                                      className={cn(
+                                        " flex justify-between font-normal"
+                                      )}>
+                                      {field.value ? (
+                                        format(field.value, "PPP")
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="w-4 h-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0"
+                                  align="start">
+                                  <Calendar
+                                    mode="single"
+                                    required={true}
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    captionLayout="dropdown"
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </FormItem>
+                          )}
+                        />
+
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                          <Button type="submit">Borrow Book</Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                    {/* end of form  */}
+                  </DialogContent>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}

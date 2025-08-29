@@ -2,7 +2,7 @@
 import App from "@/App";
 import BookDetails from "@/pages/BookDetails";
 import Books from "@/pages/Books";
-import BorrowBook from "@/pages/BorrowBook";
+import BorrowBookModal from "@/pages/BorrowBookModal";
 import BorrowSummary from "@/pages/BorrowSummary";
 import CreateBook from "@/pages/CreateBook";
 import EditBook from "@/pages/EditBook";
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
       },
       {
         path: "borrow/:bookId",
-        Component: BorrowBook,
+        Component: BorrowBookModal,
       },
       {
         path: "borrow-summary",
