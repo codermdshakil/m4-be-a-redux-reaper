@@ -50,21 +50,10 @@ const Navbar: React.FC = () => {
       {isOpen && (
         <div className="md:hidden  bg-gray-900 shadow-md">
           <div className="space-y-2 px-4 py-4">
-            <a
-              href="#home"
-              className="block text-gray-200 hover:text-white transition">
-              All Books
-            </a>
-            <a
-              href="#about"
-              className="block  text-gray-200 hover:text-white transition">
-              Add Book
-            </a>
-            <a
-              href="#services"
-              className="block text-gray-200 hover:text-white transition">
-              Borrow Summary
-            </a>
+            <Link  className="block text-gray-200 hover:text-white transition" to={"/books"}> All Books</Link>
+            <Link  className="block text-gray-200 hover:text-white transition"  to={"/create-book"}> Add Book</Link>
+            <Link  className="block text-gray-200 hover:text-white transition"   to={"/borrow-summary"}> Borrow Summary</Link>
+           
           </div>
         </div>
       )}
