@@ -1,15 +1,32 @@
-import {
-  AlertDialogFooter,
-  AlertDialogHeader,
-} from "@/components/ui/alert-dialog";
+import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -18,10 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDeleteBookMutation } from "@/redux/api/baseApi";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  useDeleteBookMutation,
+  useUpdateSingleBookMutation,
+} from "@/redux/api/baseApi";
 import type { IBook } from "@/types/types";
 import { BookOpen, Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 
 interface BooksTableProps {
@@ -32,30 +54,73 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 5;
 
-  // Calculate pagination
+  // Pagination
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
-
   const totalPages = Math.ceil(books.length / booksPerPage);
 
-  // delete states
+  // Delete states
   const [deleteBookId, setDeleteBookId] = useState<string | null>(null);
+  const [deleteBook] = useDeleteBookMutation();
 
-  const [deleteBook, { data, isLoading, isError }] = useDeleteBookMutation();
-
-  // handle delete book
   const handleConfirmDelete = async () => {
     if (deleteBookId) {
-      const data = await deleteBook(deleteBookId);
-
-      if (isLoading) {
-        toast.success("Deleting...");
-      }
-      
-      toast.success("Successfully Deleted Book");
-      // reset
+      await deleteBook(deleteBookId);
+      toast.success("Book deleted successfully");
       setDeleteBookId(null);
+    }
+  };
+
+  // Update states
+  const [open, setOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
+  const [updateSingleBook] = useUpdateSingleBookMutation();
+
+  const form = useForm<FieldValues>({
+    defaultValues: {
+      title: "",
+      author: "",
+      genre: "",
+      isbn: "",
+      copies: 0,
+      description: "",
+      available: true,
+    },
+  });
+
+  // handle pre-fill form with book data
+  const handleOpenUpdate = (book: IBook) => {
+    setSelectedBook(book);
+    form.reset(book);
+    setOpen(true);
+  };
+
+  // handle onsubmit with updated data
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (selectedBook) {
+      const updatedBook = { ...selectedBook, ...data };
+      handleUpdateBook(updatedBook);
+      setOpen(false);
+    }
+  };
+
+  // handle update book form
+  const handleUpdateBook = async (book: IBook) => {
+    try {
+      // here call updatedBook baseApi functions
+      await updateSingleBook({
+        bookId: book._id,
+        updatedData: book,
+      }).unwrap();
+
+      // Success toast
+      toast.success("Book updated successfully");
+    } catch (error: any) {
+      console.error("Update failed:", error);
+
+      // Error toast
+      toast.error(error?.data?.message || "Failed to update book");
     }
   };
 
@@ -85,11 +150,176 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                 {book.available ? "Available" : "Not Available"}
               </TableCell>
               <TableCell className="flex gap-2">
-                <Button size="sm" variant="ghost">
-                  <Edit className="h-4 w-4" />
-                </Button>
+                {/* Update Dialog */}
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={() => handleOpenUpdate(book)}
+                      size="sm"
+                      variant="ghost">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
 
-                {/* delete confirmation dialog */}
+                  <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                      <DialogTitle>Update Book</DialogTitle>
+                    </DialogHeader>
+
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6">
+                        {/* Title */}
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Title</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Author */}
+                        <FormField
+                          control={form.control}
+                          name="author"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Author</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Genre */}
+                        <FormField
+                          control={form.control}
+                          name="genre"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Genre</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select genre" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="FICTION">
+                                      Fiction
+                                    </SelectItem>
+                                    <SelectItem value="NON-FICTION">
+                                      Non-Fiction
+                                    </SelectItem>
+                                    <SelectItem value="SCIENCE">
+                                      Science
+                                    </SelectItem>
+                                    <SelectItem value="HISTORY">
+                                      History
+                                    </SelectItem>
+                                    <SelectItem value="BIOGRAPHY">
+                                      Biography
+                                    </SelectItem>
+                                    <SelectItem value="FANTASY">
+                                      Fantasy
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* ISBN */}
+                        <FormField
+                          control={form.control}
+                          name="isbn"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ISBN</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Copies */}
+                        <FormField
+                          control={form.control}
+                          name="copies"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Copies</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Description */}
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea {...field} rows={3} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Available */}
+                        <FormField
+                          control={form.control}
+                          name="available"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center justify-between border rounded-xl p-3">
+                              <div>
+                                <FormLabel>Available</FormLabel>
+                                <FormDescription>
+                                  Toggle availability
+                                </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={!!field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                          <Button type="submit">Update</Button>
+                        </DialogFooter>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+
+                {/* Delete Dialog */}
                 <Dialog
                   open={deleteBookId === book._id}
                   onOpenChange={(open) => !open && setDeleteBookId(null)}>
@@ -101,12 +331,9 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </DialogTrigger>
-
-                  <DialogContent
-                    className="sm:max-w-[425px]"
-                    aria-describedby={undefined}>
+                  <DialogContent aria-describedby={undefined}>
                     <AlertDialogHeader>
-                      <DialogTitle className="text-2xl text-center text-red-500">
+                      <DialogTitle className="text-xl text-center text-red-500">
                         Are you sure?
                       </DialogTitle>
                     </AlertDialogHeader>
@@ -119,7 +346,6 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                           Yes, Delete
                         </Button>
                       </DialogClose>
-
                       <DialogClose asChild>
                         <Button
                           onClick={() => setDeleteBookId(null)}
@@ -128,15 +354,10 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
                         </Button>
                       </DialogClose>
                     </div>
-
-                    <AlertDialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="outline">Close</Button>
-                      </DialogClose>
-                    </AlertDialogFooter>
                   </DialogContent>
                 </Dialog>
 
+                {/* Borrow Button */}
                 <Button size="sm" variant="ghost" disabled={!book.available}>
                   <BookOpen className="h-4 w-4" />
                 </Button>
@@ -146,7 +367,7 @@ const BooksShow: React.FC<BooksTableProps> = ({ books }) => {
         </TableBody>
       </Table>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-4">
         <Button
           size="sm"
